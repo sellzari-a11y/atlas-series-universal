@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Atlas Series | Knowledge, Unfolded.</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Deep Sage Green (Health/Vitality) and Light Stone (Clean background) - Primary Brand Palette -->
+    <!-- Application Structure Plan: Foldable Accordion: Structure is maintained for consistency. Information is grouped by major Focus Areas (e.g., 'Grammar Rules', 'History Events'). This allows seamless expansion across all requested domains. -->
+    <!-- Visualization & Content Choices: Organization & Clarity. Accordion is the primary method. Content blocks use the consistent Sage Green branding and clear keywords. Interaction: Search and Filter allow cross-category or targeted information retrieval. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f7f7f7; /* Light Linen background */
+            color: #1a1a2e; /* Deep blue text for contrast */
+            overflow: hidden; 
+        }
+        
+        /* Gradient Text Effect for the Title (Uses Sage Green/Teal blend) */
+        .gradient-text {
+            background-image: linear-gradient(90deg, #10b981, #06b6d4); /* Emerald to Cyan */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* Styling for key knowledge points */
+        .knowledge-key {
+            display: inline-block;
+            padding: 0.3rem 0.6rem;
+            background-color: #d1fae5; /* Very light green */
+            color: #047857; /* Deep green text */
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            line-height: 1.2;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .main-content-area {
+            /* 170px is approximate height of the fixed header/controls area */
+            height: calc(100vh - 170px); 
+            overflow-y: auto; 
+            padding: 1.5rem;
+        }
+
+        .filter-select, .search-input {
+            background-color: white;
+            border: 1px solid #c8d3e1;
+            border-radius: 0.75rem;
+            padding: 0.75rem 1rem;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            font-size: 1rem; 
+            height: 3.25rem; 
+        }
+        
+        .search-input {
+            padding-left: 2.5rem; 
+        }
+        
+        .filter-select:focus, .search-input:focus {
+            outline: none;
+            border-color: #34d399; /* Light green focus */
+            box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.4);
+        }
+
+        /* Styles for the Collapsible Sections (Sage Green Accent) */
+        .app-header {
+            cursor: pointer;
+            user-select: none;
+            transition: background-color 0.2s, box-shadow 0.2s;
+            background-color: #ffffff;
+            border-left: 5px solid #059669; /* Deep Sage Green accent bar */
+        }
+        .app-header:hover {
+            background-color: #f0fff4; /* Very light green hover */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        .content-panel {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+            background-color: #fbfbfb; /* Slightly different background for content */
+            border-bottom-left-radius: 0.75rem;
+            border-bottom-right-radius: 0.75rem;
+        }
+        .content-panel.open {
+            /* Max height must be large enough to contain all content */
+            max-height: 5000px; 
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+    </style>
+</head>
+<body class="antialiased h-screen w-screen">
+
+    <!-- Fixed Header Bar (Now The Atlas Series Header) -->
+    <header class="bg-white p-4 shadow-lg sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <h1 class="text-3xl font-extrabold tracking-tight gradient-text">The Atlas Series 📚</h1>
+            <p class="text-sm text-slate-500 hidden sm:block">Your Expertise, Instantly Mapped.</p>
+        </div>
+    </header>
+
+    <!-- Fixed Filtering and Search Control Panel (Toolbar) -->
+    <section id="filters" class="p-4 bg-white shadow-md border-b border-slate-200 sticky top-14 z-10">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex justify-between items-end mb-4">
+                <p class="text-sm font-semibold uppercase text-slate-500">Filter & Search</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <!-- Category Filter (Domain) -->
+                    <select id="category-filter" class="filter-select w-full appearance-none cursor-pointer">
+                        <option value="all">All Domains</option>
+                        <option value="Nutrients">Essential Nutrients</option>
+                        <option value="Physiology">Physiology</option>
+                        <option value="Ailments">Common Ailments</option>
+                        <option value="Science">Science</option>
+                        <option value="Finance">Financial Literacy</option>
+                        <option value="Humanities">Classical Literature</option>
+                        <option value="Education">Education</option>
+                        <option value="Wellness">General Wellness</option>
+                    </select>
+                </div>
+                <div>
+                    <!-- Focus Area Filter -->
+                    <select id="focus-filter" class="filter-select w-full appearance-none cursor-pointer">
+                        <option value="all">All Focus Areas</option>
+                    </select>
+                </div>
+                <div class="relative">
+                    <input type="text" id="search-input" placeholder="Search event, rule, definition, or concept..." class="search-input w-full">
+                    <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 text-lg pointer-events-none">🔍</span>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Scrollable Main Content Area (Accordion Structure) -->
+    <main class="main-content-area">
+        <div class="max-w-7xl mx-auto">
+             <!-- Introductory Section for context -->
+            <div class="p-6 bg-white rounded-xl shadow mb-6 border-l-4 border-emerald-400">
+                <h2 class="text-xl font-bold text-emerald-700 mb-2">Welcome to The Atlas Series</h2>
+                <p class="text-slate-600">This guide provides structured, quick-reference information across **Health, Science, Finance, and Education**. Use the filter controls above to narrow down concepts (like *'History Events'* or *'Grammar Rules'*), or use the search bar to find specific facts, definitions, or periods.</p>
+            </div>
+             <!-- Dynamic Accordion Structure -->
+            <section id="shortcuts-accordion" class="space-y-4">
+            </section>
+             <div id="no-results" class="hidden text-center py-20 bg-white rounded-xl shadow-inner">
+                <p class="text-2xl font-medium text-slate-500">😔 No entries found in the selected domains.</p>
+                <p class="text-slate-400 mt-2">Try adjusting your filters or search query.</p>
+            </div>
+            <!-- Empty space to ensure enough scroll buffer -->
+            <div class="h-10"></div>
+        </div>
+    </main>
+
+
+    <script>
+        const atlasFacts = [
+            // --- Health Domains ---
+            { category: 'Nutrients', focus: 'Minerals', fact: 'Critical for oxygen transport (hemoglobin) and cellular energy production.', keywords: ['Iron', 'Deficiency', 'Anemia', 'Fatigue'] },
+            { category: 'Physiology', focus: 'Cardiovascular', fact: 'Normal resting heart rate for adults is 60 to 100 beats per minute (bpm).', keywords: ['Heart', 'Rate', 'BPM', 'Pulse', 'Normal'] },
+            { category: 'Ailments', focus: 'Infections', fact: 'Characterized by high fever, severe muscle aches, and extreme exhaustion.', keywords: ['Influenza', 'Flu', 'Fever', 'Virus'] },
+            { category: 'Wellness', focus: 'Sleep', fact: 'Adults require 7-9 hours of continuous sleep for optimal cognitive function and mood regulation.', keywords: ['Sleep Duration', 'Insomnia', 'Cognitive', 'Mood'] },
+
+            // --- Science Domains ---
+            { category: 'Science', focus: 'Chemistry Basics', fact: 'Atoms contain protons (+), neutrons (neutral), and electrons (-). Protons determine the element.', keywords: ['Atom', 'Proton', 'Electron', 'Neutron', 'Charge'] },
+            { category: 'Science', focus: 'Chemistry Basics', fact: 'The pH scale measures acidity (below 7) or alkalinity (above 7); 7 is neutral.', keywords: ['pH', 'Acid', 'Base', 'Alkaline', 'Neutral'] },
+
+            // --- Finance Domain ---
+            { category: 'Finance', focus: 'Investments', fact: '**Compound Interest** is interest earned on the principal amount AND on the interest earned in previous periods.', keywords: ['Compounding', 'Interest', 'Growth', 'Wealth', 'Principal'] },
+            { category: 'Finance', focus: 'Credit & Debt', fact: '**APR (Annual Percentage Rate)** is the yearly rate charged for borrowing, including fees, expressed as a percentage.', keywords: ['APR', 'Loan', 'Credit Card', 'Rate', 'Fees'] },
+
+            // --- Humanities Domain ---
+            { category: 'Humanities', focus: 'Classical Epics', fact: 'The **Iliad** by Homer primarily focuses on the final weeks of the Trojan War and the rage of Achilles.', keywords: ['Homer', 'Iliad', 'Trojan War', 'Achilles', 'Epic'] },
+            { category: 'Humanities', focus: 'Literary Devices', fact: '**Catharsis** is the emotional release or purging experienced by the audience at the end of a tragedy.', keywords: ['Catharsis', 'Tragedy', 'Emotion', 'Purge', 'Audience'] },
+
+            // --- Education Domain: World History Events ---
+            { category: 'Education', focus: 'History Events', fact: 'The **Renaissance** (14th-16th Century) marked a cultural bridge between the Middle Ages and modern history, focusing on humanism and classical art.', keywords: ['Rebirth', 'Italy', 'Art', 'Humanism', 'Middle Ages'] },
+            { category: 'Education', focus: 'History Events', fact: 'The **French Revolution** (1789) overthrew the monarchy due to economic crisis and social inequality, leading to the rise of Napoleon.', keywords: ['Monarchy', 'Inequality', 'Bastille', 'Napoleon', '1789'] },
+            { category: 'Education', focus: 'History Events', fact: '**World War I** (1914–1918) was triggered by the assassination of Archduke Franz Ferdinand and led to the collapse of empires.', keywords: ['WWI', 'Archduke', 'Trench Warfare', 'Empires', '1914'] },
+            { category: 'Education', focus: 'History Events', fact: 'The **Cold War** (1947–1991) was a state of political hostility between the US and the Soviet Union, characterized by proxy wars and nuclear threat.', keywords: ['USSR', 'USA', 'Proxy', 'Nuclear', 'Berlin Wall'] },
+
+            // --- Education Domain: Grammar Rules ---
+            { category: 'Education', focus: 'Language Arts', fact: 'A **semicolon (;) ** is used to join two closely related independent clauses (full sentences) without using a coordinating conjunction (and, but, or).', keywords: ['Punctuation', 'Independent Clause', 'Sentence', 'Join'] },
+            { category: 'Education', focus: 'Language Arts', fact: 'The possessive of *it* is **its** (no apostrophe). **It\'s** is always a contraction of "it is" or "it has."', keywords: ['Apostrophe', 'Possessive', 'Contraction', 'Its', 'It\'s'] },
+            { category: 'Education', focus: 'Language Arts', fact: '**Subject-Verb Agreement** requires that a singular subject take a singular verb, and a plural subject take a plural verb.', keywords: ['Verb', 'Subject', 'Singular', 'Plural', 'Concord'] },
+            { category: 'Education', focus: 'Language Arts', fact: '**Active Voice** (Subject performs the action: *The dog chased the ball*) is generally preferred over Passive Voice (The ball was chased by the dog).', keywords: ['Voice', 'Active', 'Passive', 'Clarity', 'Direct'] },
+        ];
+
+        const categoryFilter = document.getElementById('category-filter');
+        const focusFilter = document.getElementById('focus-filter');
+        const searchInput = document.getElementById('search-input');
+        const shortcutsAccordion = document.getElementById('shortcuts-accordion');
+        const noResults = document.getElementById('no-results');
+
+        function populateFocusFilter() {
+            // Get unique, sorted list of ALL focus areas (replaces apps)
+            const focusAreas = [...new Set(atlasFacts.map(s => s.focus))].sort();
+            
+            // Rebuild the app filter dropdown
+            focusFilter.innerHTML = '<option value="all">All Focus Areas</option>';
+            focusAreas.forEach(focus => {
+                const option = document.createElement('option');
+                option.value = focus;
+                option.textContent = focus;
+                focusFilter.appendChild(option);
+            });
+            focusFilter.value = 'all';
+        }
+
+        function toggleAccordion(header) {
+            const panel = header.nextElementSibling;
+            const arrow = header.querySelector('.accordion-arrow');
+
+            if (panel.classList.contains('open')) {
+                panel.classList.remove('open');
+                arrow.textContent = '▼'; // Closed state
+            } else {
+                panel.classList.add('open');
+                arrow.textContent = '▲'; // Open state
+            }
+        }
+
+        function renderFacts() {
+            const category = categoryFilter.value; 
+            const focus = focusFilter.value;   
+            const search = searchInput.value.toLowerCase().trim();
+
+            const filteredFacts = atlasFacts.filter(fact => {
+                const categoryMatch = category === 'all' || fact.category === category;
+                const focusMatch = focus === 'all' || fact.focus === focus;
+                
+                let searchMatch = true;
+                if (search.length > 0) {
+                    const searchableText = [
+                        fact.fact,
+                        fact.category,
+                        fact.focus,
+                        fact.keywords.join(' ')
+                    ].join(' ').toLowerCase();
+
+                    searchMatch = searchableText.includes(search);
+                }
+                
+                return categoryMatch && focusMatch && searchMatch;
+            });
+
+            // 1. Group the filtered facts by Focus Area (The main collapsible groups)
+            const groupedByFocus = filteredFacts.reduce((acc, fact) => {
+                if (!acc[fact.focus]) {
+                    acc[fact.focus] = [];
+                }
+                acc[fact.focus].push(fact);
+                return acc;
+            }, {});
+
+            // 2. Sort the focus area names alphabetically
+            const sortedFocusNames = Object.keys(groupedByFocus).sort();
+
+            shortcutsAccordion.innerHTML = '';
+            
+            if (sortedFocusNames.length === 0) {
+                noResults.classList.remove('hidden');
+            } else {
+                noResults.classList.add('hidden');
+            }
+
+            // 3. Render the Collapsible UI
+            sortedFocusNames.forEach(focusName => {
+                const focusFacts = groupedByFocus[focusName];
+                
+                // Create the header element (the clickable tap)
+                const header = document.createElement('div');
+                header.className = 'app-header p-4 rounded-t-xl shadow-md border border-slate-200 flex justify-between items-center font-bold text-lg text-emerald-700 hover:shadow-lg';
+                header.innerHTML = `
+                    <span>${focusName} (${focusFacts.length} entries)</span>
+                    <span class="accordion-arrow text-xl transition-transform duration-300">▼</span>
+                `;
+                header.onclick = () => toggleAccordion(header);
+
+                // Create the content panel (the fold-out section)
+                const panel = document.createElement('div');
+                panel.className = 'content-panel px-4 pb-4 border-l border-r border-b border-slate-200';
+                
+                // Content grid container
+                const contentGrid = document.createElement('div');
+                contentGrid.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4';
+
+                focusFacts.forEach(fact => {
+                    const keywordsHTML = fact.keywords.map(word => `<span class="knowledge-key">${word}</span>`).join(' ');
+
+                    const item = document.createElement('div');
+                    item.className = 'bg-white p-5 rounded-lg shadow-sm border border-slate-100 flex flex-col justify-between transition-all transform hover:shadow-md';
+                    
+                    item.innerHTML = `
+                        <p class="text-sm text-slate-700 font-medium mb-3 leading-relaxed">${fact.fact}</p>
+                        <div class="mt-3">
+                            <span class="text-xs font-semibold uppercase text-emerald-600 mb-1 block">Keywords:</span>
+                            <div class="space-x-1 space-y-1 text-xs">${keywordsHTML}</div>
+                        </div>
+                        <span class="bg-emerald-100 text-emerald-700 text-xs px-2 py-0.5 rounded-full font-semibold shadow-sm mt-3 self-start">${fact.category}</span>
+                    `;
+                    contentGrid.appendChild(item);
+                });
+
+                panel.appendChild(contentGrid);
+
+                // Append both to the accordion container
+                const accordionItem = document.createElement('div');
+                accordionItem.className = 'accordion-item rounded-xl shadow-md';
+                accordionItem.appendChild(header);
+                accordionItem.appendChild(panel);
+                shortcutsAccordion.appendChild(accordionItem);
+            });
+        }
+
+        // --- Event Listeners ---
+        categoryFilter.addEventListener('change', renderFacts);
+        focusFilter.addEventListener('change', renderFacts);
+        searchInput.addEventListener('input', renderFacts);
+        
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault(); 
+                renderFacts(); 
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            populateFocusFilter();
+            renderFacts();
+        });
+    </script>
+</body>
+</html>
